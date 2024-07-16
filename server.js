@@ -45,6 +45,21 @@ app.post('/api/notes', (req, res) => {
   });
 });
 
+// Bonus API route to delete a note by its unique ID
+app.delete('/api/notes/:id', (req, res) => {
+  fs.readFile('db/db.json', (err, data) => {
+    if (err) return handleError(err, res); 
+    const notes = JSON.parse(data); 
+    // Create a new array excluding the note with the specified ID
+    // Filter the notes array to remove the note matching req.params.id
+    const newNotes = notes.filter(note => note.id !== req.params.id); 
+    fs.writeFile('db/db.json', JSON.stringify(newNotes), (err) => {
+      if (err) return handleError(err, res); 
+      res.json({ success: true }); // Send success message as response
+    });
+  });
+});
+
 // Fallback route for any undefined routes
 app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'public/index.html')));
 
